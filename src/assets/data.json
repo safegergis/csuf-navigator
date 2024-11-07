@@ -1,0 +1,722 @@
+{
+    "nodes": {
+        "node1": {
+            "name": "Titan Student Union",
+            "category": "hall"
+        },
+        "node2": {
+            "name": "Titan Gym",
+            "category": "hall"
+        },
+        "node3": {
+            "name": "Student Recreation Center",
+            "category": "hall"
+        },
+        "node4": {
+            "name": "Titan Shop",
+            "category": "hall"
+        },
+        "node5": {
+            "name": "CPAC",
+            "category": "hall"
+        },
+        "node6": {
+            "name": "Pollak Library",
+            "category": "hall"
+        },
+        "node7": {
+            "name": "Engineering",
+            "category": "hall"
+        },
+        "node8": {
+            "name": "Computer Science",
+            "category": "hall"
+        },
+        "node9": {
+            "name": "Education Classroom",
+            "category": "hall"
+        },
+        "node10": {
+            "name": "Mcarthy Hall",
+            "category": "hall"
+        },
+        "node11": {
+            "name": "Dan Black Hall",
+            "category": "hall"
+        },
+        "node12": {
+            "name": "Visual Arts Complex",
+            "category": "hall"
+        },
+        "node13": {
+            "name": "Mihaylo Hall",
+            "category": "hall"
+        },
+        "node14": {
+            "name": "Langsdorf Hall",
+            "category": "hall"
+        },
+        "node15": {
+            "name": "Gordon Hall",
+            "category": "hall"
+        },
+        "node16": {
+            "name": "Humanities",
+            "category": "hall"
+        },
+        "node17": {
+            "name": "Kinesiology",
+            "category": "hall"
+        },
+        "node18": {
+            "name": "Student Health and Counseling Center",
+            "category": "hall"
+        },
+        "node19": {
+            "name": "Student Housing",
+            "category": "hall"
+        },
+        "node20": {
+            "name": "Titan Sport Complex",
+            "category": "hall"
+        },
+        "node21": {
+            "name": "Intramural Field",
+            "category": "hall"
+        },
+        "node22": {
+            "name": "Titan Stadium",
+            "category": "hall"
+        },
+        "node23": {
+            "name": "Goodwin Field",
+            "category": "hall"
+        },
+        "node24": {
+            "name": "Anderson Field",
+            "category": "hall"
+        },
+        "node25": {
+            "name": "Titan Tennis Court",
+            "category": "hall"
+        },
+        "node26": {
+            "name": "Lot A",
+            "category": "parking"
+        },
+        "node27": {
+            "name": "Lot A South",
+            "category": "parking"
+        },
+        "node28": {
+            "name": "Lot D",
+            "category": "parking"
+        },
+        "node29": {
+            "name": "Fullerton Arboretum",
+            "category": "poi"
+        },
+        "node30": {
+            "name": "Eastiside North",
+            "category": "parking"
+        },
+        "node31": {
+            "name": "Eastiside South",
+            "category": "parking"
+        },
+        "node32": {
+            "name": "Lot I",
+            "category": "parking"
+        },
+        "node33": {
+            "name": "Lot F",
+            "category": "parking"
+        },
+        "node34": {
+            "name": "Nutwood Parking Structure",
+            "category": "parking"
+        },
+        "node35": {
+            "name": "Lot C West",
+            "category": "parking"
+        },
+        "node36": {
+            "name": "Lot C East",
+            "category": "parking"
+        },
+        "node37": {
+            "name": "ECS Lawn",
+            "category": "poi"
+        },
+        "node38": {
+            "name": "Commons",
+            "category": "poi"
+        },
+        "node39": {
+            "name": "Quad",
+            "category": "poi"
+        },
+        "node40": {
+            "name": "Tuffy Lawn",
+            "category": "poi"
+        },
+        "node41": {
+            "name": "Ampitheater",
+            "category": "poi"
+        }
+    },
+    "edges": {
+        "edge1": {
+            "source": "node36",
+            "target": "node11",
+            "cost": 496.8404021441193
+        },
+        "edge2": {
+            "source": "node36",
+            "target": "node10",
+            "cost": 476.13429558158253
+        },
+        "edge3": {
+            "source": "node35",
+            "target": "node36",
+            "cost": 456.31748405933337
+        },
+        "edge4": {
+            "source": "node34",
+            "target": "node35",
+            "cost": 320.38666280583533
+        },
+        "edge5": {
+            "source": "node34",
+            "target": "node12",
+            "cost": 243.12513430396248
+        },
+        "edge6": {
+            "source": "node12",
+            "target": "node10",
+            "cost": 611.6731784689762
+        },
+        "edge9": {
+            "source": "node11",
+            "target": "node10",
+            "cost": 236.88595175611397
+        },
+        "edge10": {
+            "source": "node14",
+            "target": "node11",
+            "cost": 281.3487945164861
+        },
+        "edge13": {
+            "source": "node13",
+            "target": "node14",
+            "cost": 324.1108458063691
+        },
+        "edge14": {
+            "source": "node13",
+            "target": "node15",
+            "cost": 419.4226840647746
+        },
+        "edge15": {
+            "source": "node15",
+            "target": "node33",
+            "cost": 248.7754983426825
+        },
+        "edge16": {
+            "source": "node32",
+            "target": "node9",
+            "cost": 350.9724630985314
+        },
+        "edge18": {
+            "source": "node8",
+            "target": "node7",
+            "cost": 152.8176949201889
+        },
+        "edge20": {
+            "source": "node15",
+            "target": "node14",
+            "cost": 273.93236846115883
+        },
+        "edge21": {
+            "source": "node31",
+            "target": "node33",
+            "cost": 318.84507140067234
+        },
+        "edge22": {
+            "source": "node30",
+            "target": "node32",
+            "cost": 299.0824623713331
+        },
+        "edge23": {
+            "source": "node33",
+            "target": "node30",
+            "cost": 377.4544247986502
+        },
+        "edge24": {
+            "source": "node31",
+            "target": "node30",
+            "cost": 245.09999601342287
+        },
+        "edge28": {
+            "source": "node4",
+            "target": "node1",
+            "cost": 211.76979685710623
+        },
+        "edge30": {
+            "source": "node12",
+            "target": "node1",
+            "cost": 610.3765998316203
+        },
+        "edge31": {
+            "source": "node6",
+            "target": "node9",
+            "cost": 289.15740390493204
+        },
+        "edge32": {
+            "source": "node10",
+            "target": "node5",
+            "cost": 297.98028663193463
+        },
+        "edge34": {
+            "source": "node6",
+            "target": "node5",
+            "cost": 207.45206568875133
+        },
+        "edge35": {
+            "source": "node16",
+            "target": "node6",
+            "cost": 296.07685844783606
+        },
+        "edge36": {
+            "source": "node15",
+            "target": "node16",
+            "cost": 202.39674257507204
+        },
+        "edge37": {
+            "source": "node6",
+            "target": "node4",
+            "cost": 485.7573787991799
+        },
+        "edge38": {
+            "source": "node4",
+            "target": "node17",
+            "cost": 380.8735977827025
+        },
+        "edge39": {
+            "source": "node6",
+            "target": "node17",
+            "cost": 507.1419640649844
+        },
+        "edge40": {
+            "source": "node3",
+            "target": "node4",
+            "cost": 429.6093990296882
+        },
+        "edge41": {
+            "source": "node2",
+            "target": "node3",
+            "cost": 362.3097960443382
+        },
+        "edge42": {
+            "source": "node17",
+            "target": "node2",
+            "cost": 301.53773559208145
+        },
+        "edge43": {
+            "source": "node18",
+            "target": "node17",
+            "cost": 429.0196746248593
+        },
+        "edge44": {
+            "source": "node7",
+            "target": "node18",
+            "cost": 310.53656382385964
+        },
+        "edge45": {
+            "source": "node9",
+            "target": "node7",
+            "cost": 403.12428529758677
+        },
+        "edge46": {
+            "source": "node8",
+            "target": "node19",
+            "cost": 488.73351586635636
+        },
+        "edge47": {
+            "source": "node30",
+            "target": "node8",
+            "cost": 424.38774651615466
+        },
+        "edge48": {
+            "source": "node32",
+            "target": "node8",
+            "cost": 323.29288534683224
+        },
+        "edge49": {
+            "source": "node2",
+            "target": "node25",
+            "cost": 331.17380023969287
+        },
+        "edge50": {
+            "source": "node21",
+            "target": "node2",
+            "cost": 358.47350222114056
+        },
+        "edge51": {
+            "source": "node28",
+            "target": "node25",
+            "cost": 174.71941265755217
+        },
+        "edge52": {
+            "source": "node2",
+            "target": "node28",
+            "cost": 394.90464702218947
+        },
+        "edge53": {
+            "source": "node21",
+            "target": "node20",
+            "cost": 544.081038599821
+        },
+        "edge54": {
+            "source": "node24",
+            "target": "node20",
+            "cost": 239.20705155661682
+        },
+        "edge55": {
+            "source": "node5",
+            "target": "node39",
+            "cost": 191.08516250436605
+        },
+        "edge56": {
+            "source": "node6",
+            "target": "node39",
+            "cost": 171.20349186865323
+        },
+        "edge57": {
+            "source": "node16",
+            "target": "node39",
+            "cost": 212.94755442730494
+        },
+        "edge58": {
+            "source": "node10",
+            "target": "node39",
+            "cost": 328.2110915986387
+        },
+        "edge59": {
+            "source": "node15",
+            "target": "node39",
+            "cost": 352.85984211016415
+        },
+        "edge60": {
+            "source": "node38",
+            "target": "node17",
+            "cost": 276.129336593778
+        },
+        "edge61": {
+            "source": "node4",
+            "target": "node38",
+            "cost": 203.53853672486687
+        },
+        "edge62": {
+            "source": "node6",
+            "target": "node38",
+            "cost": 303.3116426769175
+        },
+        "edge63": {
+            "source": "node28",
+            "target": "node27",
+            "cost": 502.99325458699735
+        },
+        "edge64": {
+            "source": "node9",
+            "target": "node37",
+            "cost": 182.82839675767013
+        },
+        "edge65": {
+            "source": "node7",
+            "target": "node37",
+            "cost": 267.12321897710433
+        },
+        "edge66": {
+            "source": "node26",
+            "target": "node22",
+            "cost": 354.71748417907173
+        },
+        "edge67": {
+            "source": "node27",
+            "target": "node20",
+            "cost": 796.4383391642633
+        },
+        "edge68": {
+            "source": "node22",
+            "target": "node20",
+            "cost": 402.53398453697054
+        },
+        "edge69": {
+            "source": "node23",
+            "target": "node22",
+            "cost": 431.1612353028042
+        },
+        "edge70": {
+            "source": "node24",
+            "target": "node23",
+            "cost": 307.61638290676257
+        },
+        "edge71": {
+            "source": "node20",
+            "target": "node23",
+            "cost": 399.34697069421975
+        },
+        "edge72": {
+            "source": "node27",
+            "target": "node26",
+            "cost": 370.9267409548819
+        },
+        "edge73": {
+            "source": "node25",
+            "target": "node20",
+            "cost": 637.31832259411
+        },
+        "edge74": {
+            "source": "node26",
+            "target": "node20",
+            "cost": 698.63781374479
+        },
+        "edge75": {
+            "source": "node40",
+            "target": "node3",
+            "cost": 188.22340183486745
+        },
+        "edge76": {
+            "source": "node2",
+            "target": "node40",
+            "cost": 226.51159910582948
+        },
+        "edge77": {
+            "source": "node5",
+            "target": "node41",
+            "cost": 344.7222915278325
+        },
+        "edge78": {
+            "source": "node4",
+            "target": "node41",
+            "cost": 161.18244259115227
+        },
+        "edge79": {
+            "source": "node4",
+            "target": "node40",
+            "cost": 339.9502591689847
+        },
+        "edge80": {
+            "source": "node1",
+            "target": "node41",
+            "cost": 238.83855476187284
+        },
+        "edge81": {
+            "source": "node12",
+            "target": "node41",
+            "cost": 540.1428399214876
+        },
+        "edge82": {
+            "source": "node37",
+            "target": "node17",
+            "cost": 429.47735268076707
+        },
+        "edge83": {
+            "source": "node18",
+            "target": "node37",
+            "cost": 210.28151863751623
+        },
+        "edge84": {
+            "source": "node18",
+            "target": "node21",
+            "cost": 569.5656798151114
+        },
+        "edge85": {
+            "source": "node32",
+            "target": "node16",
+            "cost": 454.1186959910482
+        },
+        "edge86": {
+            "source": "node33",
+            "target": "node32",
+            "cost": 357.27967245520693
+        },
+        "edge87": {
+            "source": "node23",
+            "target": "node29",
+            "cost": 273.17571500089457
+        }
+    },
+    "layouts": {
+        "nodes": {
+            "node1": {
+                "x": 330.953,
+                "y": 858.473
+            },
+            "node2": {
+                "x": 443.567,
+                "y": 693.822
+            },
+            "node3": {
+                "x": 328.064,
+                "y": 741.442
+            },
+            "node4": {
+                "x": 403.04,
+                "y": 869.209
+            },
+            "node5": {
+                "x": 484.094,
+                "y": 985.618
+            },
+            "node6": {
+                "x": 542.277,
+                "y": 950.721
+            },
+            "node7": {
+                "x": 734.349,
+                "y": 804.259
+            },
+            "node8": {
+                "x": 787.035,
+                "y": 803.245
+            },
+            "node9": {
+                "x": 614.794,
+                "y": 875.181
+            },
+            "node10": {
+                "x": 461.804,
+                "y": 1085.923
+            },
+            "node11": {
+                "x": 518.542,
+                "y": 1144.687
+            },
+            "node12": {
+                "x": 253.297,
+                "y": 1054.098
+            },
+            "node13": {
+                "x": 715.29,
+                "y": 1199.399
+            },
+            "node14": {
+                "x": 614.794,
+                "y": 1156.845
+            },
+            "node15": {
+                "x": 640.413,
+                "y": 1092.411
+            },
+            "node16": {
+                "x": 618.847,
+                "y": 1007.908
+            },
+            "node17": {
+                "x": 500.305,
+                "y": 780.956
+            },
+            "node18": {
+                "x": 640.229,
+                "y": 755.389
+            },
+            "node19": {
+                "x": 839.72,
+                "y": 643.163
+            },
+            "node20": {
+                "x": 510.437,
+                "y": 408.105
+            },
+            "node21": {
+                "x": 518.542,
+                "y": 595.544
+            },
+            "node22": {
+                "x": 399.346,
+                "y": 324.885
+            },
+            "node23": {
+                "x": 538.806,
+                "y": 273.353
+            },
+            "node24": {
+                "x": 583.386,
+                "y": 369.605
+            },
+            "node25": {
+                "x": 390.881,
+                "y": 592.504
+            },
+            "node26": {
+                "x": 278.418,
+                "y": 343.262
+            },
+            "node27": {
+                "x": 241.944,
+                "y": 465.857
+            },
+            "node28": {
+                "x": 334.143,
+                "y": 612.768
+            },
+            "node29": {
+                "x": 569.201,
+                "y": 184.193
+            },
+            "node30": {
+                "x": 826.67,
+                "y": 944.116
+            },
+            "node31": {
+                "x": 833.473,
+                "y": 1028.359
+            },
+            "node32": {
+                "x": 733.077,
+                "y": 900.797
+            },
+            "node33": {
+                "x": 723.628,
+                "y": 1023.634
+            },
+            "node34": {
+                "x": 219.288,
+                "y": 1128.754
+            },
+            "node35": {
+                "x": 207.477,
+                "y": 1238.599
+            },
+            "node36": {
+                "x": 363.385,
+                "y": 1217.339
+            },
+            "node37": {
+                "x": 643.427,
+                "y": 819.014
+            },
+            "node38": {
+                "x": 473.161,
+                "y": 872.222
+            },
+            "node39": {
+                "x": 545.438,
+                "y": 1009.672
+            },
+            "node40": {
+                "x": 392.019,
+                "y": 752.504
+            },
+            "node41": {
+                "x": 384.038,
+                "y": 921.44
+            },
+            "node42": {
+                "x": 400,
+                "y": 400
+            }
+        }
+    }
+}
