@@ -19,14 +19,33 @@ import * as vNG from "v-network-graph";
 import { ref, reactive, onMounted } from "vue";
 import data from "@/assets/data.json";
 import { Switch } from "@/components/ui/switch";
+
+// State
 const nodeName = ref("");
 const networkGraph = ref<vNG.VNetworkGraphInstance>();
 const devMode = ref(false);
+const algorithm = ref("dijkstra");
+const dfsDetour = ref("parking");
+const directions = ref<string[]>([]);
+const selectedNodes = ref<string[]>(["node1"]);
+const selectedEdges = ref<string[]>([]);
+const paths = ref<vNG.Paths>({});
+const nextNodeIndex = ref(Object.keys(data.nodes).length + 1);
+const nextEdgeIndex = ref(Object.keys(data.edges).length + 1);
+const currentPathIndex = ref(0);
+const allPaths = ref<string[][]>([]);
+
+// Constants
 const layers = {
     map: "base",
 };
-const algorithm = ref("dijkstra");
 
+// Graph data
+const layouts: vNG.Layouts = reactive(data.layouts);
+const nodes: vNG.Nodes = reactive(data.nodes);
+const edges: vNG.Edges = reactive(data.edges);
+
+// Graph configuration
 const config = reactive(
     vNG.defineConfigs({
         node: {
@@ -36,30 +55,30 @@ const config = reactive(
                 color: (node) => {
                     switch (node.category) {
                         case "hall":
-                            return "#fb923c"; // Orange for buildings/halls
+                            return "#fb923c";
                         case "parking":
-                            return "#60a5fa"; // Blue for parking lots
+                            return "#60a5fa";
                         case "poi":
-                            return "#4ade80"; // Green for points of interest
+                            return "#4ade80";
                         default:
                             return "#fb923c";
                     }
                 },
             },
             label: {
-                color: "#64748b", // Light slate for better contrast on any background
+                color: "#64748b",
                 fontSize: 16,
             },
         },
         edge: {
             normal: {
-                color: "#94a3b8", // Slate gray for edges
+                color: "#94a3b8",
             },
             selected: {
-                color: "#475569", // Darker slate when selected
+                color: "#475569",
             },
             label: {
-                color: "#475569", // Slate for edge labels
+                color: "#475569",
             },
         },
         path: {
@@ -77,34 +96,24 @@ const config = reactive(
         },
     }),
 );
-const layouts: vNG.Layouts = reactive(data.layouts);
-const nodes: vNG.Nodes = reactive(data.nodes);
-const edges: vNG.Edges = reactive(data.edges);
-const nextNodeIndex = ref(Object.keys(nodes).length + 1);
-const nextEdgeIndex = ref(Object.keys(edges).length + 1);
 
-const selectedNodes = ref<string[]>(["node1"]);
-const selectedEdges = ref<string[]>([]);
+// Graph class for pathfinding algorithms
 type GraphMap = { [key: string]: { [key: string]: number } };
 type EdgeMap = { [key: string]: { [key: string]: string } };
-const paths = ref<vNG.Paths>({});
 
 class Graph {
     map: GraphMap;
     edgeMap: EdgeMap;
 
-    _sorter = function (a: string, b: string) {
-        return parseFloat(a) - parseFloat(b);
-    };
+    private _sorter = (a: string, b: string) => parseFloat(a) - parseFloat(b);
 
     constructor(edges: vNG.Edges) {
-        // var map = {a:{b:3,c:1},b:{a:2,c:1},c:{a:4,b:1}},
         const map: GraphMap = {};
         const edgeMap: EdgeMap = {};
+
         Object.entries(edges).forEach(([edgeId, edge]) => {
-            const source = edge.source;
-            const target = edge.target;
-            const cost = edge?.cost ?? 1;
+            const { source, target, cost = 1 } = edge;
+
             if (!map[source]) map[source] = {};
             if (!map[target]) map[target] = {};
             if (!edgeMap[source]) edgeMap[source] = {};
@@ -124,6 +133,7 @@ class Graph {
                 edgeMap[target][source] = edgeId;
             }
         });
+
         this.map = map;
         this.edgeMap = edgeMap;
     }
@@ -133,183 +143,278 @@ class Graph {
     }
 
     convertNodesToEdges(nodes: string[]): string[] {
+        if (nodes.length === 0) return [];
+
         const edges: string[] = [];
-        if (nodes.length === 0) {
-            return [];
-        }
         let prev = nodes[0];
+
         for (let i = 1; i < nodes.length; i++) {
             const next = nodes[i];
             edges.push(this.edgeMap[prev][next]);
             prev = next;
         }
+
         return edges;
     }
 
-    _extractKeys(obj: object) {
-        const keys = [];
-        for (const key in obj) {
-            if (Object.prototype.hasOwnProperty.call(obj, key)) {
-                keys.push(key);
-            }
-        }
-        return keys;
+    private _extractKeys(obj: object) {
+        return Object.keys(obj).filter((key) =>
+            Object.prototype.hasOwnProperty.call(obj, key),
+        );
     }
 
-    _findPaths(map: GraphMap, start: string, end: string) {
-        const costs: { [key: string]: number } = {};
+    private _findPaths(map: GraphMap, start: string, end: string) {
+        const costs: { [key: string]: number } = { [start]: 0 };
         const open: { [key: string]: string[] } = { 0: [start] };
         const predecessors: { [key: string]: string } = {};
-        let keys;
 
-        const addToOpen = function (cost: number, vertex: string) {
-            const key = "" + cost;
-            if (!open[key]) {
-                open[key] = [];
-            }
+        const addToOpen = (cost: number, vertex: string) => {
+            const key = cost.toString();
+            if (!open[key]) open[key] = [];
             open[key].push(vertex);
         };
 
-        costs[start] = 0;
-
-        while (open) {
-            if (!(keys = this._extractKeys(open)).length) {
-                break;
-            }
+        while (true) {
+            const keys = this._extractKeys(open);
+            if (!keys.length) break;
 
             keys.sort(this._sorter);
-
             const key = keys[0];
             const bucket = open[key];
-            const node = bucket.shift() || "";
+            const node = bucket.shift()!;
             const currentCost = parseFloat(key);
-            const adjacentNodes = map[node] || {};
 
-            if (!bucket.length) {
-                delete open[key];
-            }
+            if (!bucket.length) delete open[key];
 
-            for (const vertex in adjacentNodes) {
-                if (
-                    Object.prototype.hasOwnProperty.call(adjacentNodes, vertex)
-                ) {
-                    const cost = adjacentNodes[vertex];
-                    const totalCost = cost + currentCost;
-                    const vertexCost = costs[vertex];
+            for (const [vertex, cost] of Object.entries(map[node] || {})) {
+                const totalCost = cost + currentCost;
+                const vertexCost = costs[vertex];
 
-                    if (vertexCost === undefined || vertexCost > totalCost) {
-                        costs[vertex] = totalCost;
-                        addToOpen(totalCost, vertex);
-                        predecessors[vertex] = node;
-                    }
+                if (vertexCost === undefined || vertexCost > totalCost) {
+                    costs[vertex] = totalCost;
+                    addToOpen(totalCost, vertex);
+                    predecessors[vertex] = node;
                 }
             }
         }
 
-        if (costs[end] === undefined) {
-            return null;
-        } else {
-            return predecessors;
-        }
+        return costs[end] === undefined ? null : predecessors;
     }
 
-    _extractShortest(predecessors: { [key: string]: string }, end: string) {
+    private _extractShortest(
+        predecessors: { [key: string]: string },
+        end: string,
+    ) {
         const nodes = [];
-        let u = end;
+        let current = end;
 
-        while (u !== undefined) {
-            nodes.push(u);
-            u = predecessors[u];
+        while (current !== undefined) {
+            nodes.push(current);
+            current = predecessors[current];
         }
 
-        nodes.reverse();
-        return nodes;
+        return nodes.reverse();
     }
 
-    _findShortestPath(map: GraphMap, nodes: string[]) {
-        nodes = [...nodes]; // copy
-        let start = nodes.shift() || "";
-        let end: string;
-        let predecessors;
+    private _findShortestPath(map: GraphMap, nodes: string[]) {
+        nodes = [...nodes];
         const path: string[] = [];
-        let shortest;
+        let start = nodes.shift()!;
 
         while (nodes.length) {
-            end = nodes.shift() || "";
-            predecessors = this._findPaths(map, start, end);
+            const end = nodes.shift()!;
+            const predecessors = this._findPaths(map, start, end);
 
-            if (predecessors) {
-                shortest = this._extractShortest(predecessors, end);
-                if (nodes.length) {
-                    path.push.apply(path, shortest.slice(0, -1));
-                } else {
-                    return path.concat(shortest);
-                }
-            } else {
-                return null;
-            }
+            if (!predecessors) return null;
 
+            const shortest = this._extractShortest(predecessors, end);
+            path.push(...(nodes.length ? shortest.slice(0, -1) : shortest));
             start = end;
         }
+
+        return path;
+    }
+
+    findPathBFS(viaNodes: string[]): string[] | null {
+        if (viaNodes.length < 2) return null;
+
+        const completePath: string[] = [];
+        for (let i = 0; i < viaNodes.length - 1; i++) {
+            const pathSegment = this._findPathBFS(viaNodes[i], viaNodes[i + 1]);
+            if (!pathSegment) return null;
+
+            if (i === 0) {
+                completePath.push(...pathSegment);
+            } else {
+                completePath.push(...pathSegment.slice(1));
+            }
+        }
+
+        return completePath;
+    }
+
+    private _findPathBFS(start: string, end: string): string[] | null {
+        const queue = [start];
+        const visited = new Set([start]);
+        const predecessors: { [key: string]: string } = {};
+
+        while (queue.length) {
+            const current = queue.shift()!;
+
+            if (current === end) {
+                const path = [];
+                let node = end;
+                while (node !== start) {
+                    path.unshift(node);
+                    node = predecessors[node];
+                }
+                path.unshift(start);
+                return path;
+            }
+
+            for (const neighbor in this.map[current]) {
+                if (!visited.has(neighbor)) {
+                    visited.add(neighbor);
+                    predecessors[neighbor] = current;
+                    queue.push(neighbor);
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private _findPathDFS(
+        start: string,
+        end: string,
+        detourType: string | null = null,
+        maxPaths: number = 10,
+    ): string[][] {
+        const visited = new Set<string>();
+        const allPaths: string[][] = [];
+
+        const dfs = (current: string, currentPath: string[]) => {
+            if (allPaths.length >= maxPaths) return;
+
+            if (current === end) {
+                allPaths.push([...currentPath]);
+                return;
+            }
+
+            const neighbors = Object.keys(this.map[current]);
+            if (detourType) {
+                neighbors.sort((a, b) => {
+                    const aPreferred = nodes[a].category === detourType;
+                    const bPreferred = nodes[b].category === detourType;
+                    if (aPreferred && !bPreferred) return -1;
+                    if (!aPreferred && bPreferred) return 1;
+                    return 0;
+                });
+            }
+
+            for (const neighbor of neighbors) {
+                if (!visited.has(neighbor)) {
+                    visited.add(neighbor);
+                    currentPath.push(neighbor);
+                    dfs(neighbor, currentPath);
+                    currentPath.pop();
+                    visited.delete(neighbor);
+                }
+            }
+        };
+
+        visited.add(start);
+        dfs(start, [start]);
+        return allPaths;
+    }
+
+    findPathDFS(
+        viaNodes: string[],
+        detourType: string | null = null,
+    ): string[][] {
+        if (viaNodes.length < 2) return [];
+
+        const completePaths: string[][] = [];
+        const firstPaths = this._findPathDFS(
+            viaNodes[0],
+            viaNodes[1],
+            detourType,
+        );
+
+        firstPaths.forEach((firstPath) => {
+            let isValidPath = true;
+            const completePath = [...firstPath];
+
+            for (let i = 2; i < viaNodes.length && isValidPath; i++) {
+                const nextPaths = this._findPathDFS(
+                    viaNodes[i - 1],
+                    viaNodes[i],
+                    detourType,
+                    1,
+                );
+                if (nextPaths.length === 0) {
+                    isValidPath = false;
+                } else {
+                    completePath.push(...nextPaths[0].slice(1));
+                }
+            }
+
+            if (isValidPath) {
+                completePaths.push(completePath);
+            }
+        });
+
+        return completePaths;
     }
 }
 
-const dijkstra = () => {
-    const graph = new Graph(data.edges);
-    const routeOfNodes = graph.findShortestPath([
-        selectedNodes.value[0],
-        selectedNodes.value[1],
-    ]);
-    if (routeOfNodes) {
-        const routeOfEdges = graph.convertNodesToEdges(routeOfNodes);
-        paths.value = { shortestPath: { edges: routeOfEdges } };
-    }
-    console.log(paths.value);
-};
-
+// Node operations
 function addNode() {
     const nodeId = `node${nextNodeIndex.value}`;
-    const name = nodeName.value;
     layouts.nodes[nodeId] = { x: 400, y: 400 };
-    nodes[nodeId] = { name };
+    nodes[nodeId] = { name: nodeName.value };
     nextNodeIndex.value++;
 }
 
 function removeNode() {
-    for (const nodeId of selectedNodes.value) {
+    selectedNodes.value.forEach((nodeId) => {
         delete nodes[nodeId];
-    }
+    });
 }
 
+// Edge operations
 function addEdge() {
     if (selectedNodes.value.length !== 2) return;
+
     const [source, target] = selectedNodes.value;
     const cost =
         Math.hypot(
             layouts.nodes[source].x - layouts.nodes[target].x,
             layouts.nodes[source].y - layouts.nodes[target].y,
         ) * 2.9;
+
     const edgeId = `edge${nextEdgeIndex.value}`;
     edges[edgeId] = { source, target, cost };
     nextEdgeIndex.value++;
 }
 
 function removeEdge() {
-    for (const edgeId of selectedEdges.value) {
+    selectedEdges.value.forEach((edgeId) => {
         delete edges[edgeId];
-    }
+    });
 }
 
-// Get graph data
-const getGraphData = () => {
+// Graph data export
+function getGraphData() {
     const graphData = {
         nodes: { ...nodes },
         edges: { ...edges },
         layouts: { ...layouts },
     };
-    const jsonData = JSON.stringify(graphData, null, 2);
-    // Save to file using Blob and download
-    const blob = new Blob([jsonData], { type: "application/json" });
+
+    const blob = new Blob([JSON.stringify(graphData, null, 2)], {
+        type: "application/json",
+    });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
@@ -318,8 +423,9 @@ const getGraphData = () => {
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
-    return graphData;
-};
+}
+
+// View initialization
 onMounted(() => {
     networkGraph.value?.setViewBox({
         top: -40,
@@ -328,17 +434,86 @@ onMounted(() => {
         right: 1450,
     });
 });
-const toggleDevMode = () => {
+
+// Mode toggles
+function toggleDevMode() {
     devMode.value = !devMode.value;
     config.node!.draggable = devMode.value;
-};
-const findRoute = () => {
+}
+
+// Route finding
+function findRoute() {
+    const graph = new Graph(data.edges);
+    let routeOfNodes: string[] | null = null;
+    allPaths.value = [];
+    currentPathIndex.value = 0;
+
     switch (algorithm.value) {
         case "dijkstra":
-            dijkstra();
+            routeOfNodes = graph.findShortestPath(selectedNodes.value);
+            if (routeOfNodes) allPaths.value = [routeOfNodes];
+            break;
+        case "bfs":
+            routeOfNodes = graph.findPathBFS(selectedNodes.value);
+            if (routeOfNodes) allPaths.value = [routeOfNodes];
+            break;
+        case "dfs":
+            allPaths.value = graph.findPathDFS(
+                selectedNodes.value,
+                dfsDetour.value === "none" ? null : dfsDetour.value,
+            );
+            // Sort paths by length (shortest first)
+            allPaths.value.sort((a, b) => a.length - b.length);
+            routeOfNodes = allPaths.value[0] || null;
             break;
     }
-};
+
+    if (routeOfNodes) {
+        updatePathDisplay();
+    }
+}
+
+function getDirections() {
+    paths.value.shortestPath.edges.forEach((edgeId, index) => {
+        const edge = edges[edgeId];
+        if (!edge) return;
+
+        const prevEdgeId = paths.value.shortestPath.edges[index - 1];
+        const prevEdge = prevEdgeId ? edges[prevEdgeId] : null;
+
+        if (prevEdge && edge.source !== prevEdge.target) {
+            [edge.source, edge.target] = [edge.target, edge.source];
+        }
+
+        directions.value.push(
+            `Walk from ${nodes[edge.source].name} to ${nodes[edge.target].name}`,
+        );
+    });
+}
+
+function updatePathDisplay() {
+    if (allPaths.value.length === 0) return;
+
+    const currentPath = allPaths.value[currentPathIndex.value];
+    const routeOfEdges = new Graph(edges).convertNodesToEdges(currentPath);
+    paths.value = { shortestPath: { edges: routeOfEdges } };
+    directions.value = [];
+    getDirections();
+}
+
+function nextPath() {
+    if (currentPathIndex.value < allPaths.value.length - 1) {
+        currentPathIndex.value++;
+        updatePathDisplay();
+    }
+}
+
+function previousPath() {
+    if (currentPathIndex.value > 0) {
+        currentPathIndex.value--;
+        updatePathDisplay();
+    }
+}
 </script>
 
 <template>
@@ -407,6 +582,7 @@ const findRoute = () => {
                     <Input v-model="nodeName" />
                 </div>
             </div>
+
             <Card class="w-full h-[1000px]">
                 <VNetworkGraph
                     ref="networkGraph"
@@ -438,15 +614,42 @@ const findRoute = () => {
                     </template>
                 </VNetworkGraph>
             </Card>
-
+            <Card
+                v-if="algorithm === 'dfs' && allPaths.length > 1"
+                class="w-full p-6"
+            >
+                <div class="flex items-center justify-between">
+                    <div class="text-sm text-slate-600">
+                        Path {{ currentPathIndex + 1 }} of {{ allPaths.length }}
+                    </div>
+                    <div class="flex gap-2">
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            @click="previousPath"
+                            :disabled="currentPathIndex === 0"
+                        >
+                            Previous Path
+                        </Button>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            @click="nextPath"
+                            :disabled="currentPathIndex === allPaths.length - 1"
+                        >
+                            Next Path
+                        </Button>
+                    </div>
+                </div>
+            </Card>
             <!-- Navigation Controls Card -->
             <Card class="w-full p-6">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <!-- Algorithm Selection -->
                     <div class="space-y-2">
-                        <Label class="text-md font-medium" for="algorithm">
-                            Algorithm
-                        </Label>
+                        <Label class="text-md font-medium" for="algorithm"
+                            >Algorithm</Label
+                        >
                         <Select v-model="algorithm">
                             <SelectTrigger>
                                 <SelectValue placeholder="Select algorithm" />
@@ -463,6 +666,31 @@ const findRoute = () => {
                                 >
                             </SelectContent>
                         </Select>
+
+                        <!-- DFS Options -->
+                        <div v-if="algorithm === 'dfs'" class="mt-4">
+                            <Label class="text-md font-medium" for="dfsDetour"
+                                >Detour Preference</Label
+                            >
+                            <Select v-model="dfsDetour">
+                                <SelectTrigger>
+                                    <SelectValue
+                                        placeholder="Select detour preference"
+                                    />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="parking"
+                                        >Visit Parking Lots</SelectItem
+                                    >
+                                    <SelectItem value="poi"
+                                        >Visit Points of Interest</SelectItem
+                                    >
+                                    <SelectItem value="none"
+                                        >Direct Path</SelectItem
+                                    >
+                                </SelectContent>
+                            </Select>
+                        </div>
                     </div>
 
                     <!-- Start Location -->
@@ -506,11 +734,12 @@ const findRoute = () => {
 
                 <!-- Find Route Button -->
                 <div class="mt-6 flex justify-end">
-                    <Button variant="default" @click="findRoute">
-                        Find Route
-                    </Button>
+                    <Button variant="default" @click="findRoute"
+                        >Find Route</Button
+                    >
                 </div>
             </Card>
+
             <Card class="w-full p-6">
                 <div class="flex items-center gap-2">
                     <div class="flex-1">
@@ -535,7 +764,14 @@ const findRoute = () => {
                                 }}
                                 feet
                             </p>
-                            <div class="mt-2"></div>
+                            <div class="mt-2">
+                                <p
+                                    v-for="(direction, index) in directions"
+                                    :key="direction"
+                                >
+                                    {{ index + 1 }}. {{ direction }}
+                                </p>
+                            </div>
                         </div>
                         <div v-else class="mt-2 text-sm text-slate-600">
                             Select start and end locations to see directions
